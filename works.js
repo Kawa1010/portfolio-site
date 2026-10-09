@@ -5,7 +5,7 @@ fetch("works.csv")
     .then(function(data) {
 
         // CSVを行ごとに分割
-        var rows = data.trim().split("\n");
+        var rows = data.trim().split(/\r?\n/);
 
         // 1行目は見出し
         var headers = rows[0].split(",");
@@ -24,13 +24,12 @@ fetch("works.csv")
             
             return work;
         });    
-
         //Worksを表示する場所
         var grid = document.getElementById("works-grid");
 
         var categorySelect = document.getElementById("category");
 
-        var sortSelect = document,getElementById("sort");
+        var sortSelect = document.getElementById("sort");
 
         var categories = [];
 
@@ -47,37 +46,60 @@ fetch("works.csv")
 
             var sortType = sortSelect.value;
 
-            var filterdWorks = works.slice();
+            var filteredWorks = works.slice();
             
             if (selectedCategory !== "all") {
-                filteredWorks = filterdWorks.filter(function(work) {
+                filteredWorks = filteredWorks.filter(function(work) {
                     return work.category === selectedCategory;
                 });   
         }   
 
         if (sortType === "new") {
             filteredWorks.sort(function(a, b) {
-                return Number(a.year) - Number(b.year);
+                return Number(b.year) - Number(a.year);
             });
         }      
         else if (sortType === "old") {
             filteredWorks.sort(function(a, b) {
-                return Number(a,year) - Number(b,year);
+                return Number(a.year) - Number(b.year);
             });
         }      
         else if (sortType === "title") {
             filteredWorks.sort(function(a, b) {
                 return a.title.localeCompare(b.title, "ja");
             });
-        }           
-        categories.forEach(function(category) {
+        }  
+        
+        grid.innerHTML = "";
+
+        filteredWorks.forEach(function(work) {
+
+            var card = document.createElement("article");
+            
+            card.className = "work-card";
+
+            card.innerHTML =
+                '<a href="' + work.link + '">' +
+                    '<img src="' + work.image + '" alt="' + work.title + '">' +
+                    '<div class="work-info">' +
+                        '<p class="work-category">' + work.category + '</p>' +
+                        '<h4>' + work.title + '</h4>' +
+                        '<p>' + work.description + '</p>' +
+                        '<p class="works-year">' + work.year + '</p>' +
+                    '</div>' +
+                '</a>';
+            
+                grid.appendChild(card);
+        });
+        }
+            categories.forEach(function(category) {
             var option = document.createElement("option");
             option.value = category;
             option.textContent = category;
-            categorySelevt.appendChild(option);
+            categorySelect.appendChild(option);
         });   
-            //作品を1つずつ表示
-        works.forEach(function(work) {
+
+works.forEach(function(work) {
 
             var card = document.createElement("article");
             
@@ -92,6 +114,15 @@ fetch("works.csv")
             
                 grid.appendChild(card);
         });
-    })   
-// カテゴリー一覧を作る
-var category
+
+        displayWorks()
+
+        categorySelect.addEventListener("change", function() {
+            displayWorks();
+        });
+        
+        sortSelect.addEventListener("change", function() {
+            displayWorks();  
+        });
+
+    })
