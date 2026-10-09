@@ -84,3 +84,20 @@ nav a:hover {
     font-size: 10px;
     margin-top: 10px;
  }   
+@media screen and (max-width: 600px) {
+    #top {
+        padding-top: 80px;
+    } 
+    
+    #top img {
+        width: 100%;
+    }
+
+    #works-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .works-controls {
+        flex-direction: column;
+    }
+}
